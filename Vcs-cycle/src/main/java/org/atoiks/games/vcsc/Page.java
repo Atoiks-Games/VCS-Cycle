@@ -26,6 +26,9 @@ import java.awt.RenderingHints;
 
 import java.awt.event.KeyEvent;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.atoiks.games.framework2d.Scene;
 import org.atoiks.games.framework2d.IGraphics;
 
@@ -52,7 +55,23 @@ public abstract class Page extends Scene {
     }
 
     public Page(String message, String... options) {
-        this.lines = message.split("\n");
+        // break message down into and 50 char limits lines.
+        final String[] msgln = message.split("\n");
+        final List<String> list = new ArrayList<>();
+        for (String msg : msgln) {
+            while (msg.length() > 50) {
+                // try to split it at a space
+                int k = msg.lastIndexOf(' ', 50);
+                if (k < 0 || k > 50) k = msg.lastIndexOf('\t', 50);
+                if (k < 0 || k > 50) k = 49; // minus 1 because ++k later
+                ++k;
+                list.add(msg.substring(0, k));
+                msg = msg.substring(k);
+            }
+            if (!msg.isEmpty()) list.add(msg);
+        }
+
+        list.toArray(this.lines = new String[list.size()]);
         this.options = options;
         this.optHeight = new int[options.length];
     }
@@ -101,24 +120,29 @@ public abstract class Page extends Scene {
 
     @Override
     public boolean update(float dt) {
-        int delta = 0;
-        if (scene.keyboard().isKeyPressed(KeyEvent.VK_UP)) delta = -1;
-        if (scene.keyboard().isKeyPressed(KeyEvent.VK_DOWN)) delta = +1;
+        if (options.length > 0) {
+            int delta = 0;
+            if (scene.keyboard().isKeyPressed(KeyEvent.VK_UP)) delta = -1;
+            if (scene.keyboard().isKeyPressed(KeyEvent.VK_DOWN)) delta = +1;
 
-        option += delta;
-        normalizeOption();
-
-        // guard against all null options which would have caused infinte loop
-        final int start = option;
-        while (options[option] == null) {
-            // Skip that index, it is non-selectable
             option += delta;
             normalizeOption();
-            if (start == option) {
-                renderSelector = false;
-                option = -1;
-                break;
+
+            // guard against all null options which would have caused infinte loop
+            final int start = option;
+            while (options[option] == null) {
+                // Skip that index, it is non-selectable
+                option += delta;
+                normalizeOption();
+                if (start == option) {
+                    renderSelector = false;
+                    option = -1;
+                    break;
+                }
             }
+        } else {
+            renderSelector = false;
+            option = -1;
         }
 
         return scene.keyboard().isKeyPressed(KeyEvent.VK_ENTER) ? optionSelected(option) : true;

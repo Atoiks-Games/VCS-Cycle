@@ -27,14 +27,15 @@ import org.atoiks.games.vcsc.Player;
 
 import org.atoiks.games.framework2d.IGraphics;
 
-public class TitleScene extends Page {
+public class StatsGenScene extends Page {
 
     private Player cached;
 
-    public TitleScene() {
+    public StatsGenScene() {
         super(
-            "10 years ago Damian Silverstone killed your father\nto become the lord.\n\nNow is your time for revenge!",
-            "Okay!"
+            "You have spent every waking moment preparing for this day. What have you been doing this whole time? Did you ...",
+            "Read books to expand your knowledge",
+            "Live alone in the woods"
         );
     }
 
@@ -44,13 +45,18 @@ public class TitleScene extends Page {
     }
 
     public boolean optionSelected(int opt) {
-        String name;
-        while (true) {
-            name = JOptionPane.showInputDialog(null, "What is your name?", "Atoiks Games - VCS Cycle", JOptionPane.PLAIN_MESSAGE);
-            if (!(name == null || name.trim().isEmpty())) break;
+        switch (opt) {
+            default:
+                return true;
+            case 0:
+                cached.wisdom += 1;
+                cached.constitution -= 1;
+                break;
+            case 1:
+                cached.constitution += 1;
+                cached.charisma -= 1;
+                break;
         }
-
-        cached.name = name;
 
         scene.gotoNextScene();
         return true;
