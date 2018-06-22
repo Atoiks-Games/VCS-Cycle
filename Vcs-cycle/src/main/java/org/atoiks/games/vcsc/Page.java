@@ -106,7 +106,7 @@ public abstract class Page extends Scene {
             }
         }
 
-        if (renderSelector && option > 0 && option < optHeight.length) {
+        if (renderSelector && option >= 0 && option < optHeight.length) {
             g.setColor(optionsColor);
             g.fillCircle(30, optHeight[option], 5);
         }
