@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'org.atoiks.games.vcsc.App'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile project(':Framework2D')
+}
+
+task copyLicense {
+    outputs.file new File("$buildDir/LICENSE")
+    outputs.file new File("$buildDir/COPYING")
+    outputs.file new File("$buildDir/README.md")
+    doLast {
+        copy {
+            from "../LICENSE"
+            into "$buildDir"
+        }
+        copy {
+            from "../COPYING"
+            into "$buildDir"
+        }
+        copy {
+            from "../README.md"
+            into "$buildDir"
+        }
+    }
+}
+
+applicationDistribution.from(copyLicense) {
+    into ""
+}
