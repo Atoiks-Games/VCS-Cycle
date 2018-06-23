@@ -18,41 +18,70 @@
 
 package org.atoiks.games.vcsc.scenes;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+
 import java.awt.Color;
+import java.awt.Image;
 
-import javax.swing.JOptionPane;
+import java.awt.event.KeyEvent;
 
-import org.atoiks.games.vcsc.Page;
+import javax.imageio.ImageIO;
+
 import org.atoiks.games.vcsc.Player;
 
+import org.atoiks.games.framework2d.Scene;
 import org.atoiks.games.framework2d.IGraphics;
 
-public class TitleScene extends Page {
+public class TitleScene extends Scene {
 
     private Player cached;
+    private boolean skipGeneration;
+    private boolean firstRun;
+    private Image background;
 
     public TitleScene() {
-        super(
-            "10 years ago Damian Silverstone killed your father\nto become the lord.\n\nNow is your time for revenge!",
-            "Okay!"
-        );
+        firstRun = true;
+    }
+
+    @Override
+    public void render(IGraphics g) {
+        g.setClearColor(Color.black);
+        g.clearGraphics();
+        g.drawImage(background, 0, 0);
     }
 
     @Override
     public void enter(int from) {
-        cached = (Player) scene.resources().get("player.dat");
+        if (firstRun) {
+            try {
+                background = ImageIO.read(this.getClass().getResourceAsStream("/title.png"));
+            } catch (Exception ex) {
+            }
+
+            // Read user data
+            try (final ObjectInputStream ois = new ObjectInputStream(new FileInputStream("player.dat"))) {
+                scene.resources().put("player.dat", (Player) ois.readObject());
+                skipGeneration = true;
+            } catch (Exception ex) {
+                // Start from the beginning
+                scene.resources().put("player.dat", new Player());
+                skipGeneration = false;
+            }
+        }
     }
 
-    public boolean optionSelected(int opt) {
-        String name;
-        while (true) {
-            name = JOptionPane.showInputDialog(null, "What is your name?", "Atoiks Games - VCS Cycle", JOptionPane.PLAIN_MESSAGE);
-            if (!(name == null || name.trim().isEmpty())) break;
+    @Override
+    public boolean update(float dt) {
+        if (scene.keyboard().isKeyPressed(KeyEvent.VK_ENTER)) {
+            if (skipGeneration) scene.switchToScene(3);
+            else scene.gotoNextScene();
         }
-
-        cached.name = name;
-
-        scene.gotoNextScene();
         return true;
+    }
+
+    @Override
+    public void resize(int w, int h) {
+        // Fixed screen size
     }
 }
