@@ -44,6 +44,7 @@ public class StatsGenScene extends Page {
         cached = (Player) scene.resources().get("player.dat");
     }
 
+    @Override
     public boolean optionSelected(int opt) {
         switch (opt) {
             default:

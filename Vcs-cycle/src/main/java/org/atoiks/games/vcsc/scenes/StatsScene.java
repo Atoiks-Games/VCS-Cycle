@@ -62,6 +62,7 @@ public class StatsScene extends Page {
         return e.toString();
     }
 
+    @Override
     public boolean optionSelected(int opt) {
         return false;
     }

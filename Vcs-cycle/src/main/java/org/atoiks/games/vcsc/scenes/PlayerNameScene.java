@@ -43,6 +43,7 @@ public class PlayerNameScene extends Page {
         cached = (Player) scene.resources().get("player.dat");
     }
 
+    @Override
     public boolean optionSelected(int opt) {
         String name;
         while (true) {
