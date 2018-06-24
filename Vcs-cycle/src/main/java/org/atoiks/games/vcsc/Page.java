@@ -34,11 +34,19 @@ import org.atoiks.games.framework2d.IGraphics;
 
 public abstract class Page extends Scene {
 
+    public static final float DEFAULT_SCROLL_DELAY = 0.05f;
+    public static final float NO_SCROLL_DELAY = 0;
+
     private static final int FONT_SIZE = 20;
     private static final Font font = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
 
     private final int[] optHeight;
+    private final float scrollDelay;
+
     private int option;
+    private float time;
+    private int charProgress;
+    private int lineProgress;
     private boolean renderSelector = true;
 
     protected final String[] lines;
@@ -46,15 +54,24 @@ public abstract class Page extends Scene {
 
     protected Color messageColor = Color.white;
     protected Color optionsColor = Color.white;
-    protected Image background;
+    protected Image background = null;
 
-    public Page(int lines, int options) {
+    public Page(final int lines, final int options) {
+        this(DEFAULT_SCROLL_DELAY, lines, options);
+    }
+
+    public Page(float scrollDelay, int lines, int options) {
         this.lines = new String[lines];
         this.options = new String[options];
         this.optHeight = new int[options];
+        this.scrollDelay = scrollDelay;
     }
 
-    public Page(String message, String... options) {
+    public Page(final String message, final String... options) {
+        this(DEFAULT_SCROLL_DELAY, message, options);
+    }
+
+    public Page(float scrollDelay, String message, String... options) {
         // break message down into and 50 char limits lines.
         final String[] msgln = message.split("\n");
         final List<String> list = new ArrayList<>();
@@ -74,6 +91,7 @@ public abstract class Page extends Scene {
         list.toArray(this.lines = new String[list.size()]);
         this.options = options;
         this.optHeight = new int[options.length];
+        this.scrollDelay = scrollDelay;
     }
 
     @Override
@@ -87,26 +105,58 @@ public abstract class Page extends Scene {
             g2d.setFont(font);
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-            final int baseHeight = 3 * App.HEIGHT / 4 - Math.max(lines.length - 3, 1) * 20;
-            g2d.setColor(messageColor);
-            for (int i = 0; i < lines.length; ++i) {
-                final String s = lines[i];
-                if (s == null) continue;    // Do not render <null>
-                g2d.drawString(s, 20, baseHeight + i * FONT_SIZE);
-            }
+            if (charProgress > 0 || lineProgress > 0) {
+                final int baseHeight = 3 * App.HEIGHT / 4 - Math.max(lines.length - 3, 1) * 20;
+                final int bound = Math.min(lineProgress + 1, lines.length);
+                g2d.setColor(messageColor);
+                for (int i = 0; i < bound; ++i) {
+                    final String s = lines[i];
+                    if (s == null) {
+                        // Do not render <null>
+                        if (i < lineProgress) {
+                            continue;
+                        } else {
+                            scrollNextLine();
+                            break;
+                        }
+                    }
 
-            final int newBase = baseHeight + (lines.length + 1) * FONT_SIZE;
-            g2d.setColor(optionsColor);
-            for (int i = 0; i < options.length; ++i) {
-                final int h = newBase + i * FONT_SIZE;
-                final String s = options[i];
-                if (s == null) continue;    // Do not render <null>
-                g2d.drawString(s, 40, h);
-                optHeight[i] = h - FONT_SIZE / 2 + 2;
+                    if (i < lineProgress) {
+                        // Render full line, line was already scrolled through
+                        g2d.drawString(s, 20, baseHeight + i * FONT_SIZE);
+                    } else if (i == lineProgress) {
+                        // Render partial line, line is currently being scrolled through
+                        boolean flag = false;
+                        int k = charProgress;
+                        if (k >= s.length()) {
+                            k = s.length();
+                            scrollNextLine();
+                            flag = true;
+                        }
+                        final String actualMessage = s.substring(0, k);
+                        g2d.drawString(actualMessage, 20, baseHeight + i * FONT_SIZE);
+
+                        if (flag) break;
+                    }
+                    // otherwise do not render, line will be scrolled through eventually
+                }
+
+                // Only render the option list if message was scrolled through entirely
+                if (doneScrolling()) {
+                    final int newBase = baseHeight + (lines.length + 1) * FONT_SIZE;
+                    g2d.setColor(optionsColor);
+                    for (int i = 0; i < options.length; ++i) {
+                        final int h = newBase + i * FONT_SIZE;
+                        final String s = options[i];
+                        if (s == null) continue;    // Do not render <null>
+                        g2d.drawString(s, 40, h);
+                        optHeight[i] = h - FONT_SIZE / 2 + 2;
+                    }
+                }
             }
         }
 
-        if (renderSelector && option >= 0 && option < optHeight.length) {
+        if (doneScrolling() && renderSelector && option >= 0 && option < optHeight.length) {
             g.setColor(optionsColor);
             g.fillCircle(30, optHeight[option], 5);
         }
@@ -118,8 +168,22 @@ public abstract class Page extends Scene {
                : option;
     }
 
+    protected void scrollNextLine() {
+        ++lineProgress;
+        charProgress = 0;
+    }
+
+    public boolean doneScrolling() {
+        return lineProgress >= lines.length;
+    }
+
     @Override
     public boolean update(float dt) {
+        if ((time += dt) >= scrollDelay) {
+            ++charProgress;
+            time -= scrollDelay;
+        }
+
         if (options.length > 0) {
             int delta = 0;
             if (scene.keyboard().isKeyPressed(KeyEvent.VK_UP)) delta = -1;
@@ -145,7 +209,14 @@ public abstract class Page extends Scene {
             option = -1;
         }
 
-        return scene.keyboard().isKeyPressed(KeyEvent.VK_ENTER) ? optionSelected(option) : true;
+        if (scene.keyboard().isKeyPressed(KeyEvent.VK_ENTER)) {
+            if (doneScrolling()) {
+                return optionSelected(option);
+            } else {
+                scrollNextLine();
+            }
+        }
+        return true;
     }
 
     public abstract boolean optionSelected(int opt);
