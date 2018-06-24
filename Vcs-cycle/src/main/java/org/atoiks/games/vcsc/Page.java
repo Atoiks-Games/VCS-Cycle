@@ -37,12 +37,14 @@ public abstract class Page extends Scene {
     public static final float DEFAULT_SCROLL_DELAY = 0.05f;
     public static final float NO_SCROLL_DELAY = 0;
 
+    private static final int MAX_OPTS_PER_SECT = 4;
     private static final int FONT_SIZE = 20;
     private static final Font font = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
 
     private final int[] optHeight;
     private final float scrollDelay;
 
+    private int optSect;
     private int option;
     private float time;
     private int charProgress;
@@ -106,7 +108,9 @@ public abstract class Page extends Scene {
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             if (charProgress > 0 || lineProgress > 0) {
-                final int baseHeight = 3 * App.HEIGHT / 4 - Math.max(lines.length - 3, 1) * 20;
+                // Idea is that if there are no options to render, the message can take up more space
+                final int baseHeight = 3 * App.HEIGHT / 4 -
+                        Math.max(lines.length - (optHeight.length == 0 ? 3 : 1), 1) * FONT_SIZE;
                 final int bound = Math.min(lineProgress + 1, lines.length);
                 g2d.setColor(messageColor);
                 for (int i = 0; i < bound; ++i) {
@@ -144,13 +148,16 @@ public abstract class Page extends Scene {
                 // Only render the option list if message was scrolled through entirely
                 if (doneScrolling()) {
                     final int newBase = baseHeight + (lines.length + 1) * FONT_SIZE;
+                    final int lower = optSect * MAX_OPTS_PER_SECT;
+                    final int optDispCount = Math.min(options.length - lower, MAX_OPTS_PER_SECT);
                     g2d.setColor(optionsColor);
-                    for (int i = 0; i < options.length; ++i) {
+                    for (int i = 0; i < optDispCount; ++i) {
+                        final int offset = i + lower;
                         final int h = newBase + i * FONT_SIZE;
-                        final String s = options[i];
+                        final String s = options[offset];
                         if (s == null) continue;    // Do not render <null>
                         g2d.drawString(s, 40, h);
-                        optHeight[i] = h - FONT_SIZE / 2 + 2;
+                        optHeight[offset] = h - FONT_SIZE / 2 + 2;
                     }
                 }
             }
@@ -163,9 +170,14 @@ public abstract class Page extends Scene {
     }
 
     private void normalizeOption() {
-        option = option < 0 ? optHeight.length - 1
-               : option >= optHeight.length ? 0
-               : option;
+        if (option < 0) {
+            option = optHeight.length - 1;
+        } else if (option >= optHeight.length) {
+            option = 0;
+        }
+
+        // Update optSect to display the correct list of options
+        optSect = option / MAX_OPTS_PER_SECT;
     }
 
     protected void scrollNextLine() {
@@ -190,11 +202,24 @@ public abstract class Page extends Scene {
         }
 
         if (options.length > 0) {
+            // Only contains -1, 0, +1
             int delta = 0;
+
+            // Modify option by 1
             if (scene.keyboard().isKeyPressed(KeyEvent.VK_UP)) delta = -1;
             if (scene.keyboard().isKeyPressed(KeyEvent.VK_DOWN)) delta = +1;
-
             option += delta;
+
+            // Modify option by a full optSec
+            if (scene.keyboard().isKeyPressed(KeyEvent.VK_LEFT)) {
+                option = (--optSect) * MAX_OPTS_PER_SECT;
+                delta = -1;
+            }
+            if (scene.keyboard().isKeyPressed(KeyEvent.VK_RIGHT)) {
+                option = (++optSect) * MAX_OPTS_PER_SECT;
+                delta = +1;
+            }
+
             normalizeOption();
 
             // guard against all null options which would have caused infinte loop
