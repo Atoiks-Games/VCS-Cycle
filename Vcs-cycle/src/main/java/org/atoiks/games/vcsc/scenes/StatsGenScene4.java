@@ -25,20 +25,21 @@ import javax.swing.JOptionPane;
 import org.atoiks.games.vcsc.Page;
 import org.atoiks.games.vcsc.Player;
 import org.atoiks.games.vcsc.Skill;
+import org.atoiks.games.vcsc.Weakness;
 
 import org.atoiks.games.framework2d.IGraphics;
 
-public class StatsGenScene1 extends Page {
+public class StatsGenScene4 extends Page {
 
     private Player cached;
 
-    public StatsGenScene1() {
+    public StatsGenScene4() {
         super(
-            "You have spent every waking moment preparing for this day. What have you been doing this whole time? Did you ...",
-            "Read books to expand your knowledge",
+            "Did you ...",
+            "Get seriously sick",
             null,
             null,
-            "Survive in the woods"
+            "Break your legs"
         );
     }
 
@@ -53,14 +54,14 @@ public class StatsGenScene1 extends Page {
             default:
                 return true;
             case 0:
-                cached.wisdom += 1;
+                cached.wisdom -= 1;
                 cached.constitution -= 1;
-                cached.skills[0] = Skill.Literacy;
+                cached.weaknesses[0] = Weakness.Sickly;
                 break;
             case 3:
-                cached.constitution += 1;
-                cached.charisma -= 1;
-                cached.skills[0] = Skill.Nature;
+                cached.dexterity -= 1;
+                cached.strength -= 1;
+                cached.weaknesses[0] = Weakness.Crippled;
                 break;
         }
 
