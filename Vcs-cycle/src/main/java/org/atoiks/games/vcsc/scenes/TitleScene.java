@@ -24,7 +24,6 @@ import java.io.ObjectInputStream;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.Graphics2D;
 
 import java.awt.event.KeyEvent;
 
@@ -58,12 +57,11 @@ public class TitleScene extends Scene {
         if (firstRun) {
             firstRun = false;
         } else {
-            final Graphics2D g2d = (Graphics2D) g.getRawGraphics();
-            g2d.setFont(font);
-            g2d.setColor(Color.black);
-            g2d.fillRect(222, 388, 150, 20);
-            g2d.setColor(Color.white);
-            g2d.drawString("Press enter to start game", 222, 403);
+            g.setColor(Color.black);
+            g.fillRect(222, 388, 372, 408);
+            g.setFont(font);
+            g.setColor(Color.white);
+            g.drawString("Press enter to start game", 222, 403);
 
             // the initial drawString on macs is slow, it blocks
             // the reset of the operation including the screen.
@@ -95,7 +93,7 @@ public class TitleScene extends Scene {
 
     @Override
     public boolean update(float dt) {
-        if (scene.keyboard().isKeyPressed(KeyEvent.VK_ENTER) && screenReady) {
+        if (screenReady && scene.keyboard().isKeyPressed(KeyEvent.VK_ENTER)) {
             if (skipGeneration) scene.switchToScene(4);
             else scene.gotoNextScene();
         }
