@@ -173,6 +173,11 @@ public abstract class Page extends Scene {
         charProgress = 0;
     }
 
+    protected void resetScrolling() {
+        lineProgress = 0;
+        charProgress = 0;
+    }
+
     public boolean doneScrolling() {
         return lineProgress >= lines.length;
     }
