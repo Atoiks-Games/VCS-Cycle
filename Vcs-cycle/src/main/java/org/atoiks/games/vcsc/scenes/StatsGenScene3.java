@@ -28,17 +28,17 @@ import org.atoiks.games.vcsc.Skill;
 
 import org.atoiks.games.framework2d.IGraphics;
 
-public class StatsGenScene1 extends Page {
+public class StatsGenScene3 extends Page {
 
     private Player cached;
 
-    public StatsGenScene1() {
+    public StatsGenScene3() {
         super(
-            "You have spent every waking moment preparing for this day. What have you been doing this whole time? Did you ...",
-            "Read books to expand your knowledge",
+            "Did you ...",
+            "Have a mentor",
             null,
             null,
-            "Live alone in the woods"
+            "Live alone"
         );
     }
 
@@ -54,13 +54,13 @@ public class StatsGenScene1 extends Page {
                 return true;
             case 0:
                 cached.wisdom += 1;
-                cached.constitution -= 1;
-                cached.skills[0] = Skill.Literacy;
+                cached.charisma += 1;
+                cached.skills[2] = Skill.Deception;
                 break;
             case 3:
+                cached.dexterity += 1;
                 cached.constitution += 1;
-                cached.charisma -= 1;
-                cached.skills[0] = Skill.Nature;
+                cached.skills[2] = Skill.Investigation;
                 break;
         }
 

@@ -24,6 +24,7 @@ import javax.swing.JOptionPane;
 
 import org.atoiks.games.vcsc.Page;
 import org.atoiks.games.vcsc.Player;
+import org.atoiks.games.vcsc.Skill;
 
 import org.atoiks.games.framework2d.IGraphics;
 
@@ -34,10 +35,10 @@ public class StatsGenScene2 extends Page {
     public StatsGenScene2() {
         super(
             "Did you ...",
-            "Read books to expand your knowledge",
+            "Learn magic",
             null,
             null,
-            "Live alone in the woods"
+            "Master the blade"
         );
     }
 
@@ -53,11 +54,13 @@ public class StatsGenScene2 extends Page {
                 return true;
             case 0:
                 cached.wisdom += 1;
-                cached.constitution -= 1;
+                cached.intelligence += 1;
+                cached.skills[1] = Skill.Magic;
                 break;
             case 3:
-                cached.constitution += 1;
-                cached.charisma -= 1;
+                cached.dexterity += 1;
+                cached.strength += 1;
+                cached.skills[1] = Skill.MeleeWeapon;
                 break;
         }
 
