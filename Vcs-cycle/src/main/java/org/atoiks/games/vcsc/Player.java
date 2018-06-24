@@ -42,4 +42,18 @@ public final class Player implements Serializable {
         Arrays.fill(skills, Skill.NONE);
         Arrays.fill(weaknesses, Weakness.NONE);
     }
+
+    public boolean hasSkill(Skill skill) {
+        for (final Skill s : skills) {
+            if (s == skill) return true;
+        }
+        return false;
+    }
+
+    public boolean hasWeakness(Weakness weakness) {
+        for (final Weakness w : weaknesses) {
+            if (w == weakness) return true;
+        }
+        return false;
+    }
 }

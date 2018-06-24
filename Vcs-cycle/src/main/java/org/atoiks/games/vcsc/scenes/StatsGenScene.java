@@ -20,6 +20,8 @@ package org.atoiks.games.vcsc.scenes;
 
 import java.awt.Color;
 
+import java.util.Random;
+
 import javax.swing.JOptionPane;
 
 import org.atoiks.games.vcsc.Page;
@@ -48,6 +50,8 @@ public class StatsGenScene extends Page {
     private int phase = -1;
     private Player cached;
 
+    private final Random rnd = new Random();
+
     public StatsGenScene() {
         super(3, 4);
     }
@@ -74,6 +78,21 @@ public class StatsGenScene extends Page {
     private void updatePhase(int newPhase) {
         // If we got through all the phases, go to next scene
         if (newPhase >= phases1.length) {
+            // Before switching scenes, BE RANDOM!
+            final Skill[] skills = Skill.values();
+            Skill s = skills[rnd.nextInt(skills.length)];
+            while (cached.hasSkill(s)) {
+                s = skills[rnd.nextInt(skills.length)];
+            }
+            cached.skills[3] = s;
+
+            final Weakness[] weaknesses = Weakness.values();
+            Weakness w = weaknesses[rnd.nextInt(weaknesses.length)];
+            while (cached.hasWeakness(w)) {
+                w = weaknesses[rnd.nextInt(weaknesses.length)];
+            }
+            cached.weaknesses[1] = w;
+
             scene.gotoNextScene();
             return;
         }
