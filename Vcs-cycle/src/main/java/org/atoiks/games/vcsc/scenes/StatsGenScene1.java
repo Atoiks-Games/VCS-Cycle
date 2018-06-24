@@ -27,15 +27,15 @@ import org.atoiks.games.vcsc.Player;
 
 import org.atoiks.games.framework2d.IGraphics;
 
-public class StatsGenScene extends Page {
+public class StatsGenScene1 extends Page {
 
     private Player cached;
 
-    public StatsGenScene() {
+    public StatsGenScene1() {
         super(
             "You have spent every waking moment preparing for this day. What have you been doing this whole time? Did you ...",
             "Read books to expand your knowledge",
-            "Live alone in the woods"
+            "\n\nLive alone in the woods"
         );
     }
 
