@@ -230,4 +230,9 @@ public abstract class Page extends Scene {
     public void resize(int x, int y) {
         // Screen is fixed
     }
+
+    @Override
+    public void leave() {
+        resetScrolling();
+    }
 }
