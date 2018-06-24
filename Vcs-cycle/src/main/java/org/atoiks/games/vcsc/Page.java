@@ -21,8 +21,6 @@ package org.atoiks.games.vcsc;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 
 import java.awt.event.KeyEvent;
 
@@ -40,6 +38,7 @@ public abstract class Page extends Scene {
     private static final int MAX_OPTS_PER_SECT = 4;
     private static final int FONT_SIZE = 20;
     private static final Font font = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
+    private static final Font info = new Font("Monospaced", Font.PLAIN, 8);
 
     private final int[] optHeight;
     private final float scrollDelay;
@@ -102,70 +101,73 @@ public abstract class Page extends Scene {
         g.clearGraphics();
         if (background != null) g.drawImage(background, 0, 0);
 
-        {
-            final Graphics2D g2d = (Graphics2D) g.getRawGraphics();
-            g2d.setFont(font);
-            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-            if (charProgress > 0 || lineProgress > 0) {
-                // Idea is that if there are no options to render, the message can take up more space
-                final int baseHeight = 3 * App.HEIGHT / 4 -
-                        Math.max(lines.length - (optHeight.length == 0 ? 3 : 1), 1) * FONT_SIZE;
-                final int bound = Math.min(lineProgress + 1, lines.length);
-                g2d.setColor(messageColor);
-                for (int i = 0; i < bound; ++i) {
-                    final String s = lines[i];
-                    if (s == null) {
-                        // Do not render <null>
-                        if (i < lineProgress) {
-                            continue;
-                        } else {
-                            scrollNextLine();
-                            break;
-                        }
-                    }
-
+        g.setFont(font);
+        if (charProgress > 0 || lineProgress > 0) {
+            // Idea is that if there are no options to render, the message can take up more space
+            final int baseHeight = 3 * App.HEIGHT / 4 -
+                    Math.max(lines.length - (optHeight.length == 0 ? 3 : 1), 1) * FONT_SIZE;
+            final int bound = Math.min(lineProgress + 1, lines.length);
+            g.setColor(messageColor);
+            for (int i = 0; i < bound; ++i) {
+                final String s = lines[i];
+                if (s == null) {
+                    // Do not render <null>
                     if (i < lineProgress) {
-                        // Render full line, line was already scrolled through
-                        g2d.drawString(s, 20, baseHeight + i * FONT_SIZE);
-                    } else if (i == lineProgress) {
-                        // Render partial line, line is currently being scrolled through
-                        boolean flag = false;
-                        int k = charProgress;
-                        if (k >= s.length()) {
-                            k = s.length();
-                            scrollNextLine();
-                            flag = true;
-                        }
-                        final String actualMessage = s.substring(0, k);
-                        g2d.drawString(actualMessage, 20, baseHeight + i * FONT_SIZE);
-
-                        if (flag) break;
+                        continue;
+                    } else {
+                        scrollNextLine();
+                        break;
                     }
-                    // otherwise do not render, line will be scrolled through eventually
                 }
 
-                // Only render the option list if message was scrolled through entirely
-                if (doneScrolling()) {
-                    final int newBase = baseHeight + (lines.length + 1) * FONT_SIZE;
-                    final int lower = optSect * MAX_OPTS_PER_SECT;
-                    final int optDispCount = Math.min(options.length - lower, MAX_OPTS_PER_SECT);
-                    g2d.setColor(optionsColor);
-                    for (int i = 0; i < optDispCount; ++i) {
-                        final int offset = i + lower;
-                        final int h = newBase + i * FONT_SIZE;
-                        final String s = options[offset];
-                        if (s == null) continue;    // Do not render <null>
-                        g2d.drawString(s, 40, h);
-                        optHeight[offset] = h - FONT_SIZE / 2 + 2;
+                if (i < lineProgress) {
+                    // Render full line, line was already scrolled through
+                    g.drawString(s, 20, baseHeight + i * FONT_SIZE);
+                } else if (i == lineProgress) {
+                    // Render partial line, line is currently being scrolled through
+                    boolean flag = false;
+                    int k = charProgress;
+                    if (k >= s.length()) {
+                        k = s.length();
+                        scrollNextLine();
+                        flag = true;
                     }
+                    final String actualMessage = s.substring(0, k);
+                    g.drawString(actualMessage, 20, baseHeight + i * FONT_SIZE);
+
+                    if (flag) break;
+                }
+                // otherwise do not render, line will be scrolled through eventually
+            }
+
+            // Only render the option list if message was scrolled through entirely
+            if (doneScrolling()) {
+                final int newBase = baseHeight + (lines.length + 1) * FONT_SIZE;
+                final int lower = optSect * MAX_OPTS_PER_SECT;
+                final int optDispCount = Math.min(options.length - lower, MAX_OPTS_PER_SECT);
+                g.setColor(optionsColor);
+                for (int i = 0; i < optDispCount; ++i) {
+                    final int offset = i + lower;
+                    final int h = newBase + i * FONT_SIZE;
+                    final String s = options[offset];
+                    if (s == null) continue;    // Do not render <null>
+                    g.drawString(s, 40, h);
+                    optHeight[offset] = h - FONT_SIZE / 2 + 2;
+                }
+
+                if (renderSelector && option >= 0 && option < optHeight.length) {
+                    g.setColor(optionsColor);
+                    g.fillCircle(30, optHeight[option], 5);
+                }
+
+                final int optSectCount = (options.length - 1) / MAX_OPTS_PER_SECT;
+                if (optSectCount > 0) {
+                    g.setColor(messageColor);
+                    g.setFont(info);
+                    g.drawString("Option Page (" + (optSect + 1) + "/" + (optSectCount + 1) + ")",
+                            10, App.HEIGHT - 4);
                 }
             }
-        }
-
-        if (doneScrolling() && renderSelector && option >= 0 && option < optHeight.length) {
-            g.setColor(optionsColor);
-            g.fillCircle(30, optHeight[option], 5);
         }
     }
 
@@ -210,7 +212,7 @@ public abstract class Page extends Scene {
             if (scene.keyboard().isKeyPressed(KeyEvent.VK_DOWN)) delta = +1;
             option += delta;
 
-            // Modify option by a full optSec
+            // Modify option by a full optSect
             if (scene.keyboard().isKeyPressed(KeyEvent.VK_LEFT)) {
                 option = (--optSect) * MAX_OPTS_PER_SECT;
                 delta = -1;
