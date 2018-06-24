@@ -48,18 +48,13 @@ public class StatsScene extends Page {
         lines[7]  = String.format("  con: %+d", cached.constitution);
         lines[8]  = String.format("  cha: %+d", cached.charisma);
         lines[10] = "Skills:";
-        lines[11] = "  - " + objToStr(cached.skills[0], "(none)");
-        lines[12] = "  - " + objToStr(cached.skills[1], "(none)");
-        lines[13] = "  - " + objToStr(cached.skills[2], "(none)");
-        lines[14] = "  - " + objToStr(cached.skills[3], "(none)");
+        lines[11] = "  - " + cached.skills[0];
+        lines[12] = "  - " + cached.skills[1];
+        lines[13] = "  - " + cached.skills[2];
+        lines[14] = "  - " + cached.skills[3];
         lines[16] = "Weaknesses:";
-        lines[17] = "  - " + objToStr(cached.weaknesses[0], "(none)");
-        lines[18] = "  - " + objToStr(cached.weaknesses[1], "(none)");
-    }
-
-    private static String objToStr(final Object e, final String s) {
-        if (e == null) return s;
-        return e.toString();
+        lines[17] = "  - " + cached.weaknesses[0];
+        lines[18] = "  - " + cached.weaknesses[1];
     }
 
     @Override

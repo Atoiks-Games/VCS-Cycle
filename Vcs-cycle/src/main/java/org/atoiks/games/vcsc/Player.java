@@ -20,6 +20,8 @@ package org.atoiks.games.vcsc;
 
 import java.io.Serializable;
 
+import java.util.Arrays;
+
 public final class Player implements Serializable {
 
     private static final long serialVerionUID = 12938472870L;
@@ -35,4 +37,9 @@ public final class Player implements Serializable {
     public int charisma = 0;
 
     public String name = null;
+
+    public Player() {
+        Arrays.fill(skills, Skill.NONE);
+        Arrays.fill(weaknesses, Weakness.NONE);
+    }
 }

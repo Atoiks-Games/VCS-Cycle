@@ -20,6 +20,7 @@ package org.atoiks.games.vcsc;
 
 public enum Weakness {
 
+    NONE,
     Pie, Sickly, Crippled, Cursed, Fearful, Clumsy,
     Gullible, Greedy, Lost, PassiveAggressive,
     Prideful, Envious, Hungry, Insane, Paranoid;

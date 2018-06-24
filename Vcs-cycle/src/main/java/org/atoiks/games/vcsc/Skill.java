@@ -20,6 +20,7 @@ package org.atoiks.games.vcsc;
 
 public enum Skill {
 
+    NONE,
     Literacy, Hieroglyphics, SignLanguage, Ciphertext, Penmanship,
     Nature, Animals, Luck, Potions, Stealth, City, Bribery, Alliance,
     Magic, Artifacts, Religion, Myth, MeleeWeapon, Unarmed, Aim, Throwing,
