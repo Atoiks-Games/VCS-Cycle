@@ -192,6 +192,11 @@ public abstract class Page extends Scene {
         charProgress = 0;
     }
 
+    protected void resetOptionSelection() {
+        option = 0;
+        optSect = 0;
+    }
+
     public boolean doneScrolling() {
         return lineProgress >= lines.length;
     }
@@ -261,5 +266,6 @@ public abstract class Page extends Scene {
     @Override
     public void leave() {
         resetScrolling();
+        resetOptionSelection();
     }
 }

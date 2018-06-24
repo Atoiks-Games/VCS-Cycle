@@ -94,7 +94,7 @@ public class TitleScene extends Scene {
     @Override
     public boolean update(float dt) {
         if (screenReady && scene.keyboard().isKeyPressed(KeyEvent.VK_ENTER)) {
-            if (skipGeneration) scene.switchToScene(5);
+            if (skipGeneration) scene.switchToScene(3);
             else scene.gotoNextScene();
         }
         return true;
