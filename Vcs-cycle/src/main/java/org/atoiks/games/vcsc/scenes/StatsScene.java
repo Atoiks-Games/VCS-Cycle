@@ -24,20 +24,49 @@ import javax.swing.JOptionPane;
 
 import org.atoiks.games.vcsc.Page;
 import org.atoiks.games.vcsc.Player;
+import org.atoiks.games.vcsc.Skill;
+import org.atoiks.games.vcsc.Weakness;
+
+import java.util.Random;
 
 import org.atoiks.games.framework2d.IGraphics;
 
 public class StatsScene extends Page {
 
     private Player cached;
+    public int j;
 
     public StatsScene() {
         super(19, 0);
     }
 
+    private Random rnd = new Random();
+
     @Override
     public void enter(int from) {
+
         cached = (Player) scene.resources().get("player.dat");
+
+        j = rnd.nextInt(35);
+
+        cached.skills[3] = Skill.values()[j];
+
+        while(cached.skills[3] == cached.skills[0]||cached.skills[3] == cached.skills[1]||cached.skills[3] == cached.skills[2]){
+          j = rnd.nextInt(35);
+          cached.skills[3] = Skill.values()[j];
+        }
+
+        j = rnd.nextInt(15);
+
+        cached.weaknesses[1] = Weakness.values()[j];
+
+        while(cached.weaknesses[1] == cached.weaknesses[0]){
+          j = rnd.nextInt(15);
+          cached.weaknesses[1] = Weakness.values()[j];
+        }
+
+
+
 
         lines[0]  = "Stats for " + cached.name + ':';
         lines[2]  = "Modifiers:";
