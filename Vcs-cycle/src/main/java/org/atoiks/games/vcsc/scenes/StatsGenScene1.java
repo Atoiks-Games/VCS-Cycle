@@ -35,7 +35,9 @@ public class StatsGenScene1 extends Page {
         super(
             "You have spent every waking moment preparing for this day. What have you been doing this whole time? Did you ...",
             "Read books to expand your knowledge",
-            "\n\nLive alone in the woods"
+            null,
+            null,
+            "Live alone in the woods"
         );
     }
 
@@ -53,7 +55,7 @@ public class StatsGenScene1 extends Page {
                 cached.wisdom += 1;
                 cached.constitution -= 1;
                 break;
-            case 1:
+            case 3:
                 cached.constitution += 1;
                 cached.charisma -= 1;
                 break;
