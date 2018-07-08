@@ -94,9 +94,12 @@ public abstract class Page extends Scene {
         final List<String> list = new ArrayList<>();
         for (String msg : msgln) {
             while (msg.length() > LINE_BREAK_WIDTH) {
-                // try to split it at a space
-                int k = msg.lastIndexOf(' ', LINE_BREAK_WIDTH);
-                if (k < 0 || k > LINE_BREAK_WIDTH) k = msg.lastIndexOf('\t', LINE_BREAK_WIDTH);
+                // try to split it at a space or tab that is the furthest away
+                final int idxSpc = msg.lastIndexOf(' ', LINE_BREAK_WIDTH);
+                final int idxTab = msg.lastIndexOf('\t', LINE_BREAK_WIDTH);
+
+                int k = Math.max(idxSpc, idxTab);
+                if (k < 0 || k > LINE_BREAK_WIDTH) k = Math.min(idxSpc, idxTab);
                 if (k < 0 || k > LINE_BREAK_WIDTH) k = LINE_BREAK_WIDTH - 1;
                 ++k;
                 list.add(msg.substring(0, k));
