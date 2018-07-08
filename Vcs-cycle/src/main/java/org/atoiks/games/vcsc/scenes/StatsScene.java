@@ -29,30 +29,27 @@ import org.atoiks.games.framework2d.IGraphics;
 
 public class StatsScene extends Page {
 
-    public StatsScene() {
-        super(19, 0);
-    }
-
     @Override
     public void enter(int from) {
         final Player cached = (Player) scene.resources().get("player.dat");
 
-        lines[0]  = "Stats for " + cached.name + ':';
-        lines[2]  = "Modifiers:";
-        lines[3]  = String.format("  str: %+d", cached.strength);
-        lines[4]  = String.format("  int: %+d", cached.intelligence);
-        lines[5]  = String.format("  dex: %+d", cached.dexterity);
-        lines[6]  = String.format("  wis: %+d", cached.wisdom);
-        lines[7]  = String.format("  con: %+d", cached.constitution);
-        lines[8]  = String.format("  cha: %+d", cached.charisma);
-        lines[10] = "Skills:";
-        lines[11] = "  - " + cached.skills[0];
-        lines[12] = "  - " + cached.skills[1];
-        lines[13] = "  - " + cached.skills[2];
-        lines[14] = "  - " + cached.skills[3];
-        lines[16] = "Weaknesses:";
-        lines[17] = "  - " + cached.weaknesses[0];
-        lines[18] = "  - " + cached.weaknesses[1];
+        updateMessage(
+                "Stats for " + cached.name + ":\n\n" +
+                "Modifiers:\n" +
+                String.format("  str: %+d\n", cached.strength) +
+                String.format("  int: %+d\n", cached.intelligence) +
+                String.format("  dex: %+d\n", cached.dexterity) +
+                String.format("  wis: %+d\n", cached.wisdom) +
+                String.format("  con: %+d\n", cached.constitution) +
+                String.format("  cha: %+d\n", cached.charisma) + '\n' +
+                "Skills:\n" +
+                "  - " + cached.skills[0] + '\n' +
+                "  - " + cached.skills[1] + '\n' +
+                "  - " + cached.skills[2] + '\n' +
+                "  - " + cached.skills[3] + "\n\n" +
+                "Weaknesses:\n" +
+                "  - " + cached.weaknesses[0] + '\n' +
+                "  - " + cached.weaknesses[1]);
     }
 
     @Override

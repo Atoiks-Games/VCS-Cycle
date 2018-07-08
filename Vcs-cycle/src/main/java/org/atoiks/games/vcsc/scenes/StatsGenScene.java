@@ -52,10 +52,6 @@ public class StatsGenScene extends Page {
 
     private final Random rnd = new Random();
 
-    public StatsGenScene() {
-        super(3, 4);
-    }
-
     @Override
     public void enter(int from) {
         cached = (Player) scene.resources().get("player.dat");
@@ -102,30 +98,20 @@ public class StatsGenScene extends Page {
 
         switch (newPhase) {
             case 0:
-                lines[0] = "You have spent every waking moment preparing for";
-                lines[1] = "this day. What have you been doing this whole";
-                lines[2] = "time? Did you ...";
-
-                options[0] = "Read books to expand your knowledge";
-                options[3] = "Survive in the woods";
+                updateMessage("You have spent every waking moment preparing for\nthis day. What have you been doing this whole\ntime? Did you ...");
+                updateOptions("Read books to expand your knowledge", null, null, "Survive in the woods");
                 break;
             case 1:
-                lines[0] = "";
-                lines[1] = "";
-                lines[2] = "Did you ...";
-
-                options[0] = "Learn magic";
-                options[3] = "Master the blade";
+                updateMessage("\n\nDid you ...");
+                updateOptions("Learn magic", null, null, "Master the blade");
                 break;
             case 2:
                 // lines do not change
-                options[0] = "Have a mentor";
-                options[3] = "Live alone";
+                updateOptions("Have a mentor", null, null, "Live alone");
                 break;
             case 3:
                 // lines do no change
-                options[0] = "Get seriously sick";
-                options[3] = "Break your legs";
+                updateOptions("Get seriously sick", null, null, "Break your legs");
                 break;
         }
         resetScrolling();

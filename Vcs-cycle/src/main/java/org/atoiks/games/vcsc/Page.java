@@ -35,13 +35,12 @@ public abstract class Page extends Scene {
     public static final float DEFAULT_SCROLL_DELAY = 0.05f;
     public static final float NO_SCROLL_DELAY = 0;
 
+    public static final int LINE_BREAK_WIDTH = 50;
+
     private static final int MAX_OPTS_PER_SECT = 4;
     private static final int FONT_SIZE = 20;
     private static final Font font = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
     private static final Font info = new Font("Monospaced", Font.PLAIN, 8);
-
-    private final int[] optHeight;
-    private final float scrollDelay;
 
     private int optSect;
     private int option;
@@ -50,22 +49,24 @@ public abstract class Page extends Scene {
     private int lineProgress;
     private boolean renderSelector = true;
 
-    protected final String[] lines;
-    protected final String[] options;
+    private float scrollDelay;
+    private String[] lines;
+    private String[] options;
+    private int[] optHeight;
 
     protected Color messageColor = Color.white;
     protected Color optionsColor = Color.white;
     protected Image background = null;
 
-    public Page(final int lines, final int options) {
-        this(DEFAULT_SCROLL_DELAY, lines, options);
+    protected Page() {
+        this(DEFAULT_SCROLL_DELAY);
     }
-
-    public Page(float scrollDelay, int lines, int options) {
-        this.lines = new String[lines];
-        this.options = new String[options];
-        this.optHeight = new int[options];
-        this.scrollDelay = scrollDelay;
+    
+    protected Page(float scrollDelay) {
+        this.lines = new String[0];
+        this.options = new String[0];
+        this.optHeight = new int[0];
+        updateScrollDelay(scrollDelay);
     }
 
     public Page(final String message, final String... options) {
@@ -73,26 +74,38 @@ public abstract class Page extends Scene {
     }
 
     public Page(float scrollDelay, String message, String... options) {
-        // break message down into and 50 char limits lines.
+        updateMessage(message);
+        updateOptions(options);
+        updateScrollDelay(scrollDelay);
+    }
+
+    protected final void updateScrollDelay(float newDelay) {
+        this.scrollDelay = Math.max(newDelay, 0);
+    }
+
+    protected final void updateOptions(String... options) {
+        this.options = options;
+        this.optHeight = new int[options.length];
+    }
+
+    protected final void updateMessage(String message) {
+        // break message down into LINE_BREAK_WIDTH char-limits lines.
         final String[] msgln = message.split("\n");
         final List<String> list = new ArrayList<>();
         for (String msg : msgln) {
-            while (msg.length() > 50) {
+            while (msg.length() > LINE_BREAK_WIDTH) {
                 // try to split it at a space
-                int k = msg.lastIndexOf(' ', 50);
-                if (k < 0 || k > 50) k = msg.lastIndexOf('\t', 50);
-                if (k < 0 || k > 50) k = 49; // minus 1 because ++k later
+                int k = msg.lastIndexOf(' ', LINE_BREAK_WIDTH);
+                if (k < 0 || k > LINE_BREAK_WIDTH) k = msg.lastIndexOf('\t', LINE_BREAK_WIDTH);
+                if (k < 0 || k > LINE_BREAK_WIDTH) k = LINE_BREAK_WIDTH - 1;
                 ++k;
                 list.add(msg.substring(0, k));
                 msg = msg.substring(k);
             }
-            if (!msg.isEmpty()) list.add(msg);
+            list.add(msg);
         }
 
         list.toArray(this.lines = new String[list.size()]);
-        this.options = options;
-        this.optHeight = new int[options.length];
-        this.scrollDelay = scrollDelay;
     }
 
     @Override
