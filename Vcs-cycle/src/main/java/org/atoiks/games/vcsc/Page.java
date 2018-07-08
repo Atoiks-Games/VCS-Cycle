@@ -61,7 +61,7 @@ public abstract class Page extends Scene {
     protected Page() {
         this(DEFAULT_SCROLL_DELAY);
     }
-    
+
     protected Page(float scrollDelay) {
         this.lines = new String[0];
         this.options = new String[0];
