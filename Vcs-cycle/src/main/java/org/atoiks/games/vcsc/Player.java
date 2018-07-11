@@ -38,6 +38,8 @@ public final class Player implements Serializable {
 
     public String name = null;
 
+    public boolean shouldSave = false;
+
     public Player() {
         Arrays.fill(skills, Skill.NONE);
         Arrays.fill(weaknesses, Weakness.NONE);

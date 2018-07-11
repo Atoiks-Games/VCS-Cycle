@@ -44,10 +44,13 @@ public class App {
             frame.loop();
         } finally {
             // Save user data
-            try (final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("player.dat"))) {
-                oos.writeObject(frame.getSceneManager().resources().get("player.dat"));
-            } catch (IOException ex) {
-                // Welp, pray, cuz you will start from the beginning next time
+            final Player p = (Player) frame.getSceneManager().resources().get("player.dat");
+            if (p != null && p.shouldSave) {
+                try (final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("player.dat"))) {
+                    oos.writeObject(p);
+                } catch (IOException ex) {
+                    // Welp, pray, cuz you will start from the beginning next time
+                }
             }
 
             frame.close();

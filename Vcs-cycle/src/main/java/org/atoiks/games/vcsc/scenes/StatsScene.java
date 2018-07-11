@@ -32,6 +32,7 @@ public class StatsScene extends Page {
     @Override
     public void enter(int from) {
         final Player cached = (Player) scene.resources().get("player.dat");
+        cached.shouldSave = true;
 
         updateMessage(
                 "Stats for " + cached.name + ":\n\n" +
