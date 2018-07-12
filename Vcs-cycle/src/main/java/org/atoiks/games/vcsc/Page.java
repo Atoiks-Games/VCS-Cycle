@@ -67,24 +67,24 @@ public abstract class Page extends Scene {
         this.lineBreakWidth = lineBreakWidth;
     }
 
-    protected void updateOptions(String... options) {
+    public void updateOptions(String... options) {
         this.options = options;
         this.optHeight = new int[Math.min(MAX_OPTS_PER_SECT, options.length)];
     }
 
-    protected void updateMessage(String message) {
-        this.lines = wrapText(message, lineBreakWidth);
+    public void updateMessage(String message) {
+        this.lines = wrapText(message);
     }
 
-    protected void updateScrollDelay(float newDelay) {
+    public void updateScrollDelay(float newDelay) {
         this.scrollDelay = Math.max(newDelay, 0);
     }
 
-    protected int getLineCount() {
+    public int getLineCount() {
         return lines.length;
     }
 
-    protected int getOptionCount() {
+    public int getOptionCount() {
         return options.length;
     }
 
@@ -96,24 +96,23 @@ public abstract class Page extends Scene {
 
     protected abstract int calcMessageY();
 
-    protected void scrollNextLine() {
+    public void scrollNextLine() {
         ++lineProgress;
         charProgress = 0;
     }
 
-    protected void resetScrolling() {
+    public void resetScrolling() {
         lineProgress = 0;
         charProgress = 0;
     }
 
-    protected void resetOptionSelection() {
+    public void resetOptionSelection() {
         option = 0;
         optSect = 0;
     }
 
-    private static String[] wrapText(final String text, final int lineBreakWidth) {
-        if (text == null) return new String[0];
-        if (lineBreakWidth < 1) throw new IllegalArgumentException("br-width must >= 1, got " + lineBreakWidth);
+    protected String[] wrapText(final String text) {
+        if (text == null || lineBreakWidth < 1) return new String[0];
 
         // break text down into lineBreakWidth char-limits lines.
         final String[] msgln = text.split("\n");
