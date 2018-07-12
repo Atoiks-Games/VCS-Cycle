@@ -43,12 +43,18 @@ public abstract class Page extends Scene {
 
     public final int lineBreakWidth;
 
-    protected float time;
-    protected float scrollDelay;
-
     protected int option;
     protected int charProgress;
     protected int lineProgress;
+
+    protected Color bgColor = Color.black;
+    protected Color messageColor = Color.white;
+    protected Color optionsColor = Color.white;
+
+    protected Image image = null;
+
+    private float scrollTimer;
+    private float scrollDelay;
 
     private int optSect;
     private boolean renderSelector = true;
@@ -56,12 +62,6 @@ public abstract class Page extends Scene {
     private String[] lines;
     private String[] options;
     private int[] optHeight;
-
-    protected Color bgColor = Color.black;
-    protected Color messageColor = Color.white;
-    protected Color optionsColor = Color.white;
-
-    protected Image image = null;
 
     protected Page(int lineBreakWidth) {
         this.lineBreakWidth = lineBreakWidth;
@@ -104,6 +104,7 @@ public abstract class Page extends Scene {
     public void resetScrolling() {
         lineProgress = 0;
         charProgress = 0;
+        scrollTimer = 0;
     }
 
     public void resetOptionSelection() {
@@ -230,9 +231,9 @@ public abstract class Page extends Scene {
 
     @Override
     public boolean update(float dt) {
-        if ((time += dt) >= scrollDelay) {
+        if ((scrollTimer += dt) >= scrollDelay) {
             ++charProgress;
-            time -= scrollDelay;
+            scrollTimer -= scrollDelay;
         }
 
         if (options.length > 0) {
