@@ -33,7 +33,7 @@ public class PlayerNameScene extends HorizontalPage {
 
     public PlayerNameScene() {
         super(
-            "10 years ago Damian Silverstone killed your father\nto become the lord. Now is your time for revenge!",
+            "10 years ago Damian Silverstone killed your father to become the lord. Now is your time for revenge!",
             "Okay!"
         );
     }
