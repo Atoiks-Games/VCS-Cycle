@@ -64,6 +64,31 @@ public abstract class Page extends Scene {
         option = 0;
     }
 
+    protected String[] wrapText(final String text, final int lineBreakWidth) {
+        if (lineBreakWidth < 1) throw new IllegalArgumentException("br-width must >= 1, got " + lineBreakWidth);
+
+        // break text down into lineBreakWidth char-limits lines.
+        final String[] msgln = text.split("\n");
+        final List<String> list = new ArrayList<>();
+        for (String msg : msgln) {
+            while (msg.length() > lineBreakWidth) {
+                // try to split it at a space or tab that is the furthest away
+                final int idxSpc = msg.lastIndexOf(' ', lineBreakWidth);
+                final int idxTab = msg.lastIndexOf('\t', lineBreakWidth);
+
+                int k = Math.max(idxSpc, idxTab);
+                if (k < 0 || k > lineBreakWidth) k = Math.min(idxSpc, idxTab);
+                if (k < 0 || k > lineBreakWidth) k = lineBreakWidth - 1;
+                ++k;
+                list.add(msg.substring(0, k));
+                msg = msg.substring(k);
+            }
+            list.add(msg);
+        }
+
+        return list.toArray(new String[list.size()]);
+    }
+
     public abstract boolean doneScrolling();
 
     @Override

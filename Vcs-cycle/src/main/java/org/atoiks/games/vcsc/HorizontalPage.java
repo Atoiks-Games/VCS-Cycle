@@ -77,27 +77,8 @@ public abstract class HorizontalPage extends Page {
     }
 
     @Override
-    protected final void updateMessage(String message) {
-        // break message down into LINE_BREAK_WIDTH char-limits lines.
-        final String[] msgln = message.split("\n");
-        final List<String> list = new ArrayList<>();
-        for (String msg : msgln) {
-            while (msg.length() > LINE_BREAK_WIDTH) {
-                // try to split it at a space or tab that is the furthest away
-                final int idxSpc = msg.lastIndexOf(' ', LINE_BREAK_WIDTH);
-                final int idxTab = msg.lastIndexOf('\t', LINE_BREAK_WIDTH);
-
-                int k = Math.max(idxSpc, idxTab);
-                if (k < 0 || k > LINE_BREAK_WIDTH) k = Math.min(idxSpc, idxTab);
-                if (k < 0 || k > LINE_BREAK_WIDTH) k = LINE_BREAK_WIDTH - 1;
-                ++k;
-                list.add(msg.substring(0, k));
-                msg = msg.substring(k);
-            }
-            list.add(msg);
-        }
-
-        list.toArray(this.lines = new String[list.size()]);
+    protected final void updateMessage(final String message) {
+        this.lines = wrapText(message, LINE_BREAK_WIDTH);
     }
 
     @Override
