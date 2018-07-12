@@ -43,10 +43,6 @@ public abstract class Page extends Scene {
 
     public final int lineBreakWidth;
 
-    protected int option;
-    protected int charProgress;
-    protected int lineProgress;
-
     protected Color bgColor = Color.black;
     protected Color messageColor = Color.white;
     protected Color optionsColor = Color.white;
@@ -55,6 +51,10 @@ public abstract class Page extends Scene {
 
     private float scrollTimer;
     private float scrollDelay;
+
+    private int option;
+    private int charProgress;
+    private int lineProgress;
 
     private int optSect;
     private boolean renderSelector = true;
