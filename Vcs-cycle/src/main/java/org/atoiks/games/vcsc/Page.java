@@ -44,8 +44,8 @@ public abstract class Page extends Scene {
     public final int lineBreakWidth;
 
     protected Color bgColor = Color.black;
-    protected Color messageColor = Color.white;
-    protected Color optionsColor = Color.white;
+    protected Color msgColor = Color.white;
+    protected Color optColor = Color.white;
 
     protected Image image = null;
 
@@ -154,7 +154,7 @@ public abstract class Page extends Scene {
         if (charProgress > 0 || lineProgress > 0) {
             // Idea is that if there are no options to render, the message can take up more space
             final int bound = Math.min(lineProgress + 1, lines.length);
-            g.setColor(messageColor);
+            g.setColor(msgColor);
             for (int i = 0; i < bound; ++i) {
                 final String s = lines[i];
                 if (s == null) {
@@ -192,7 +192,7 @@ public abstract class Page extends Scene {
                 final int newBase = baseHeight + (lines.length + 1) * FONT_SIZE;
                 final int lower = optSect * MAX_OPTS_PER_SECT;
                 final int optDispCount = Math.min(options.length - lower, MAX_OPTS_PER_SECT);
-                g.setColor(optionsColor);
+                g.setColor(optColor);
                 for (int i = 0; i < optDispCount; ++i) {
                     final int offset = i + lower;
                     final int h = newBase + i * FONT_SIZE;
@@ -203,13 +203,13 @@ public abstract class Page extends Scene {
                 }
 
                 if (renderSelector && option >= 0 && option < optHeight.length) {
-                    g.setColor(optionsColor);
+                    g.setColor(optColor);
                     g.fillCircle(baseWidth + 30, optHeight[option], 5);
                 }
 
                 final int optSectCount = (options.length - 1) / MAX_OPTS_PER_SECT;
                 if (optSectCount > 0) {
-                    g.setColor(messageColor);
+                    g.setColor(msgColor);
                     g.setFont(info);
                     g.drawString("Option Page (" + (optSect + 1) + "/" + (optSectCount + 1) + ")",
                             baseWidth + 10, App.HEIGHT - 4);
