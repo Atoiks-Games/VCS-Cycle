@@ -35,72 +35,98 @@ public abstract class Page extends Scene {
     public static final float DEFAULT_SCROLL_DELAY = 0.05f;
     public static final float NO_SCROLL_DELAY = 0;
 
-    public static final int LINE_BREAK_WIDTH = 50;
+    public static final int MAX_OPTS_PER_SECT = 4;
+    public static final int FONT_SIZE = 20;
 
-    private static final int MAX_OPTS_PER_SECT = 4;
-    private static final int FONT_SIZE = 20;
     private static final Font font = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
     private static final Font info = new Font("Monospaced", Font.PLAIN, 8);
 
+    public final int lineBreakWidth;
+
+    protected float time;
+    protected float scrollDelay;
+
+    protected int option;
+    protected int charProgress;
+    protected int lineProgress;
+
     private int optSect;
-    private int option;
-    private float time;
-    private int charProgress;
-    private int lineProgress;
     private boolean renderSelector = true;
 
-    private float scrollDelay;
     private String[] lines;
     private String[] options;
     private int[] optHeight;
 
+    protected Color bgColor = Color.black;
     protected Color messageColor = Color.white;
     protected Color optionsColor = Color.white;
-    protected Image background = null;
 
-    protected Page() {
-        this(DEFAULT_SCROLL_DELAY);
+    protected Image image = null;
+
+    protected Page(int lineBreakWidth) {
+        this.lineBreakWidth = lineBreakWidth;
     }
 
-    protected Page(float scrollDelay) {
-        this.lines = new String[0];
-        this.options = new String[0];
-        this.optHeight = new int[0];
-        updateScrollDelay(scrollDelay);
+    protected void updateOptions(String... options) {
+        this.options = options;
+        this.optHeight = new int[Math.min(MAX_OPTS_PER_SECT, options.length)];
     }
 
-    public Page(final String message, final String... options) {
-        this(DEFAULT_SCROLL_DELAY, message, options);
+    protected void updateMessage(String message) {
+        this.lines = wrapText(message, lineBreakWidth);
     }
 
-    public Page(float scrollDelay, String message, String... options) {
-        updateMessage(message);
-        updateOptions(options);
-        updateScrollDelay(scrollDelay);
-    }
-
-    protected final void updateScrollDelay(float newDelay) {
+    protected void updateScrollDelay(float newDelay) {
         this.scrollDelay = Math.max(newDelay, 0);
     }
 
-    protected final void updateOptions(String... options) {
-        this.options = options;
-        this.optHeight = new int[options.length];
+    protected int getLineCount() {
+        return lines.length;
     }
 
-    protected final void updateMessage(String message) {
-        // break message down into LINE_BREAK_WIDTH char-limits lines.
-        final String[] msgln = message.split("\n");
+    protected int getOptionCount() {
+        return options.length;
+    }
+
+    protected abstract int calcImageX();
+
+    protected abstract int calcImageY();
+
+    protected abstract int calcMessageX();
+
+    protected abstract int calcMessageY();
+
+    protected void scrollNextLine() {
+        ++lineProgress;
+        charProgress = 0;
+    }
+
+    protected void resetScrolling() {
+        lineProgress = 0;
+        charProgress = 0;
+    }
+
+    protected void resetOptionSelection() {
+        option = 0;
+        optSect = 0;
+    }
+
+    private static String[] wrapText(final String text, final int lineBreakWidth) {
+        if (text == null) return new String[0];
+        if (lineBreakWidth < 1) throw new IllegalArgumentException("br-width must >= 1, got " + lineBreakWidth);
+
+        // break text down into lineBreakWidth char-limits lines.
+        final String[] msgln = text.split("\n");
         final List<String> list = new ArrayList<>();
         for (String msg : msgln) {
-            while (msg.length() > LINE_BREAK_WIDTH) {
+            while (msg.length() > lineBreakWidth) {
                 // try to split it at a space or tab that is the furthest away
-                final int idxSpc = msg.lastIndexOf(' ', LINE_BREAK_WIDTH);
-                final int idxTab = msg.lastIndexOf('\t', LINE_BREAK_WIDTH);
+                final int idxSpc = msg.lastIndexOf(' ', lineBreakWidth);
+                final int idxTab = msg.lastIndexOf('\t', lineBreakWidth);
 
                 int k = Math.max(idxSpc, idxTab);
-                if (k < 0 || k > LINE_BREAK_WIDTH) k = Math.min(idxSpc, idxTab);
-                if (k < 0 || k > LINE_BREAK_WIDTH) k = LINE_BREAK_WIDTH - 1;
+                if (k < 0 || k > lineBreakWidth) k = Math.min(idxSpc, idxTab);
+                if (k < 0 || k > lineBreakWidth) k = lineBreakWidth - 1;
                 ++k;
                 list.add(msg.substring(0, k));
                 msg = msg.substring(k);
@@ -108,20 +134,25 @@ public abstract class Page extends Scene {
             list.add(msg);
         }
 
-        list.toArray(this.lines = new String[list.size()]);
+        return list.toArray(new String[list.size()]);
+    }
+
+    public boolean doneScrolling() {
+        return lineProgress >= lines.length;
     }
 
     @Override
     public void render(IGraphics g) {
-        g.setClearColor(Color.black);
+        g.setClearColor(bgColor);
         g.clearGraphics();
-        if (background != null) g.drawImage(background, 0, 0);
+        if (image != null) g.drawImage(image, calcImageX(), calcImageY());
+
+        final int baseWidth = calcMessageX();
+        final int baseHeight = calcMessageY();
 
         g.setFont(font);
         if (charProgress > 0 || lineProgress > 0) {
             // Idea is that if there are no options to render, the message can take up more space
-            final int baseHeight = 3 * App.HEIGHT / 4 -
-                    Math.max(lines.length - (optHeight.length == 0 ? 3 : 1), 1) * FONT_SIZE;
             final int bound = Math.min(lineProgress + 1, lines.length);
             g.setColor(messageColor);
             for (int i = 0; i < bound; ++i) {
@@ -138,7 +169,7 @@ public abstract class Page extends Scene {
 
                 if (i < lineProgress) {
                     // Render full line, line was already scrolled through
-                    g.drawString(s, 20, baseHeight + i * FONT_SIZE);
+                    g.drawString(s, baseWidth + 20, baseHeight + i * FONT_SIZE);
                 } else if (i == lineProgress) {
                     // Render partial line, line is currently being scrolled through
                     boolean flag = false;
@@ -149,7 +180,7 @@ public abstract class Page extends Scene {
                         flag = true;
                     }
                     final String actualMessage = s.substring(0, k);
-                    g.drawString(actualMessage, 20, baseHeight + i * FONT_SIZE);
+                    g.drawString(actualMessage, baseWidth + 20, baseHeight + i * FONT_SIZE);
 
                     if (flag) break;
                 }
@@ -167,13 +198,13 @@ public abstract class Page extends Scene {
                     final int h = newBase + i * FONT_SIZE;
                     final String s = options[offset];
                     if (s == null) continue;    // Do not render <null>
-                    g.drawString(s, 40, h);
+                    g.drawString(s, baseWidth + 40, h);
                     optHeight[offset] = h - FONT_SIZE / 2 + 2;
                 }
 
                 if (renderSelector && option >= 0 && option < optHeight.length) {
                     g.setColor(optionsColor);
-                    g.fillCircle(30, optHeight[option], 5);
+                    g.fillCircle(baseWidth + 30, optHeight[option], 5);
                 }
 
                 final int optSectCount = (options.length - 1) / MAX_OPTS_PER_SECT;
@@ -181,7 +212,7 @@ public abstract class Page extends Scene {
                     g.setColor(messageColor);
                     g.setFont(info);
                     g.drawString("Option Page (" + (optSect + 1) + "/" + (optSectCount + 1) + ")",
-                            10, App.HEIGHT - 4);
+                            baseWidth + 10, App.HEIGHT - 4);
                 }
             }
         }
@@ -196,25 +227,6 @@ public abstract class Page extends Scene {
 
         // Update optSect to display the correct list of options
         optSect = option / MAX_OPTS_PER_SECT;
-    }
-
-    protected void scrollNextLine() {
-        ++lineProgress;
-        charProgress = 0;
-    }
-
-    protected void resetScrolling() {
-        lineProgress = 0;
-        charProgress = 0;
-    }
-
-    protected void resetOptionSelection() {
-        option = 0;
-        optSect = 0;
-    }
-
-    public boolean doneScrolling() {
-        return lineProgress >= lines.length;
     }
 
     @Override
@@ -276,7 +288,7 @@ public abstract class Page extends Scene {
 
     @Override
     public void resize(int x, int y) {
-        // Screen is fixed
+        // Assumes screen is fixed
     }
 
     @Override

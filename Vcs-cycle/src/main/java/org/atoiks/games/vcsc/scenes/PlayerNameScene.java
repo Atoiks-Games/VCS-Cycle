@@ -22,18 +22,18 @@ import java.awt.Color;
 
 import javax.swing.JOptionPane;
 
-import org.atoiks.games.vcsc.Page;
 import org.atoiks.games.vcsc.Player;
+import org.atoiks.games.vcsc.HorizontalPage;
 
 import org.atoiks.games.framework2d.IGraphics;
 
-public class PlayerNameScene extends Page {
+public class PlayerNameScene extends HorizontalPage {
 
     private Player cached;
 
     public PlayerNameScene() {
         super(
-            "10 years ago Damian Silverstone killed your father\nto become the lord. Now is your time for revenge!",
+            "10 years ago Damian Silverstone killed your father to become the lord. Now is your time for revenge!",
             "Okay!"
         );
     }
