@@ -22,12 +22,12 @@ import java.awt.Color;
 
 import javax.swing.JOptionPane;
 
-import org.atoiks.games.vcsc.Page;
+import org.atoiks.games.vcsc.HorizontalPage;
 import org.atoiks.games.vcsc.Player;
 
 import org.atoiks.games.framework2d.IGraphics;
 
-public class PlayerNameScene extends Page {
+public class PlayerNameScene extends HorizontalPage {
 
     private Player cached;
 
