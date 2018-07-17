@@ -23,11 +23,12 @@ import java.awt.Color;
 import javax.swing.JOptionPane;
 
 import org.atoiks.games.vcsc.HorizontalPage;
+import org.atoiks.games.vcsc.VerticalPage;
 import org.atoiks.games.vcsc.Player;
 
 import org.atoiks.games.framework2d.IGraphics;
 
-public class StatsScene extends HorizontalPage {
+public class StatsScene extends VerticalPage {
 
     @Override
     public void enter(int from) {

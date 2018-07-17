@@ -25,13 +25,14 @@ import java.util.Random;
 import javax.swing.JOptionPane;
 
 import org.atoiks.games.vcsc.HorizontalPage;
+import org.atoiks.games.vcsc.VerticalPage;
 import org.atoiks.games.vcsc.Skill;
 import org.atoiks.games.vcsc.Player;
 import org.atoiks.games.vcsc.Weakness;
 
 import org.atoiks.games.framework2d.IGraphics;
 
-public class StatsGenScene extends HorizontalPage {
+public class StatsGenScene extends VerticalPage {
 
     private static final Delta[] phases1 = {
         new Delta(0, 0, 0, 1, -1, 0, Skill.Literacy, Weakness.NONE),

@@ -41,7 +41,6 @@ public final class Player implements Serializable {
     public String motherName = "Merideth Diamondheart";
 
     public boolean dHeart = true;
-    public boolean iDoNotExsist = false;
     public boolean shouldSave = false;
 
     public Player() {

@@ -24,10 +24,11 @@ import javax.swing.JOptionPane;
 
 import org.atoiks.games.vcsc.Player;
 import org.atoiks.games.vcsc.HorizontalPage;
+import org.atoiks.games.vcsc.VerticalPage;
 
 import org.atoiks.games.framework2d.IGraphics;
 
-public class PlayerNameScene extends HorizontalPage {
+public class PlayerNameScene extends VerticalPage {
 
     private Player cached;
     private boolean dHeart;
@@ -45,11 +46,9 @@ public class PlayerNameScene extends HorizontalPage {
     @Override
     public void enter(int from) {
         cached = (Player) scene.resources().get("player.dat");
-        if(cached.iDoNotExsist){
-            cached.dHeart = true;
-            cached.enemyName = "Tessa Bloodsoul";
-            cached.motherName = "Merideth Diamondheart";
-        }
+        cached.dHeart = true;
+        cached.enemyName = "Tessa Bloodsoul";
+        cached.motherName = "Merideth Diamondheart";
         dHeart = cached.dHeart;
         enemyName = cached.enemyName;
         motherName = cached.motherName;
