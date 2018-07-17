@@ -49,6 +49,8 @@ public abstract class Page extends Scene {
 
     protected Image image = null;
 
+    private PositioningStrategy posStrat;
+
     private float scrollTimer;
     private float scrollDelay;
 
@@ -65,6 +67,10 @@ public abstract class Page extends Scene {
 
     protected Page(int lineBreakWidth) {
         this.lineBreakWidth = lineBreakWidth;
+    }
+
+    protected void usePositioningStrategy(PositioningStrategy p) {
+        this.posStrat = p;
     }
 
     public void updateOptions(String... options) {
@@ -87,14 +93,6 @@ public abstract class Page extends Scene {
     public int getOptionCount() {
         return options.length;
     }
-
-    protected abstract int calcImageX();
-
-    protected abstract int calcImageY();
-
-    protected abstract int calcMessageX();
-
-    protected abstract int calcMessageY();
 
     public void scrollNextLine() {
         ++lineProgress;
@@ -145,10 +143,10 @@ public abstract class Page extends Scene {
     public void render(IGraphics g) {
         g.setClearColor(bgColor);
         g.clearGraphics();
-        if (image != null) g.drawImage(image, calcImageX(), calcImageY());
+        if (image != null) g.drawImage(image, posStrat.getImageX(this), posStrat.getImageY(this));
 
-        final int baseWidth = calcMessageX();
-        final int baseHeight = calcMessageY();
+        final int msgX = posStrat.getMessageX(this);
+        final int msgY = posStrat.getMessageY(this);
 
         g.setFont(font);
         if (charProgress > 0 || lineProgress > 0) {
@@ -169,7 +167,7 @@ public abstract class Page extends Scene {
 
                 if (i < lineProgress) {
                     // Render full line, line was already scrolled through
-                    g.drawString(s, baseWidth + 20, baseHeight + i * FONT_SIZE);
+                    g.drawString(s, msgX, msgY + i * FONT_SIZE);
                 } else if (i == lineProgress) {
                     // Render partial line, line is currently being scrolled through
                     boolean flag = false;
@@ -180,7 +178,7 @@ public abstract class Page extends Scene {
                         flag = true;
                     }
                     final String actualMessage = s.substring(0, k);
-                    g.drawString(actualMessage, baseWidth + 20, baseHeight + i * FONT_SIZE);
+                    g.drawString(actualMessage, msgX, msgY + i * FONT_SIZE);
 
                     if (flag) break;
                 }
@@ -189,22 +187,24 @@ public abstract class Page extends Scene {
 
             // Only render the option list if message was scrolled through entirely
             if (doneScrolling()) {
-                final int newBase = baseHeight + (lines.length + 1) * FONT_SIZE;
+                final int optY = posStrat.getOptionY(this);
+                final int optX = posStrat.getOptionX(this);
+
                 final int lower = optSect * MAX_OPTS_PER_SECT;
                 final int optDispCount = Math.min(options.length - lower, MAX_OPTS_PER_SECT);
                 g.setColor(optColor);
                 for (int i = 0; i < optDispCount; ++i) {
                     final int offset = i + lower;
-                    final int h = newBase + i * FONT_SIZE;
+                    final int h = optY + i * FONT_SIZE;
                     final String s = options[offset];
                     if (s == null) continue;    // Do not render <null>
-                    g.drawString(s, baseWidth + 40, h);
+                    g.drawString(s, optX, h);
                     optHeight[offset] = h - FONT_SIZE / 2 + 2;
                 }
 
                 if (renderSelector && option >= 0 && option < optHeight.length) {
                     g.setColor(optColor);
-                    g.fillCircle(baseWidth + 30, optHeight[option], 5);
+                    g.fillCircle(optX - 10, optHeight[option], 5);
                 }
 
                 final int optSectCount = (options.length - 1) / MAX_OPTS_PER_SECT;
@@ -212,7 +212,7 @@ public abstract class Page extends Scene {
                     g.setColor(msgColor);
                     g.setFont(info);
                     g.drawString("Option Page (" + (optSect + 1) + "/" + (optSectCount + 1) + ")",
-                            baseWidth + 10, App.HEIGHT - 4);
+                            optX - 20, App.HEIGHT - 4);
                 }
             }
         }

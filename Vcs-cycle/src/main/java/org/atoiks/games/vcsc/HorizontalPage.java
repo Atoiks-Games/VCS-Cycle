@@ -39,25 +39,39 @@ public abstract class HorizontalPage extends Page {
         updateMessage(message);
         updateOptions(options);
         updateScrollDelay(scrollDelay);
+        this.usePositioningStrategy(new PositioningStrat());
     }
 
-    @Override
-    protected int calcMessageX() {
-        return 0;
-    }
+    private class PositioningStrat implements PositioningStrategy {
 
-    @Override
-    protected int calcMessageY() {
-        return 3 * App.HEIGHT / 4 - Math.max(getLineCount() - (getOptionCount() == 0 ? 3 : 1), 1) * FONT_SIZE;
-    }
+        @Override
+        public int getMessageX(Page p) {
+            return 0;
+        }
 
-    @Override
-    protected int calcImageX() {
-        return 0;
-    }
+        @Override
+        public int getMessageY(Page p) {
+            return 3 * App.HEIGHT / 4 - Math.max(p.getLineCount() - (p.getOptionCount() == 0 ? 3 : 1), 1) * FONT_SIZE;
+        }
 
-    @Override
-    protected int calcImageY() {
-        return 0;
+        @Override
+        public int getImageX(Page p) {
+            return 0;
+        }
+
+        @Override
+        public int getImageY(Page p) {
+            return 0;
+        }
+
+        @Override
+        public int getOptionX(Page p) {
+            return 30;
+        }
+
+        @Override
+        public int getOptionY(Page p) {
+            return 3 * App.HEIGHT / 4 + 3 * FONT_SIZE / 2;
+        }
     }
 }
