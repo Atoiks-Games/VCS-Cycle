@@ -99,7 +99,7 @@ public class StatsGenScene extends VerticalPage {
 
         switch (newPhase) {
             case 0:
-                updateMessage("You have spent every waking moment preparing for\nthis day. What have you been doing this whole\ntime? Did you ...");
+                updateMessage("You have spent every waking moment preparing for this day. What have you been doing this whole time? Did you ...");
                 updateOptions("Read books to expand your knowledge", null, null, "Survive in the woods");
                 break;
             case 1:
