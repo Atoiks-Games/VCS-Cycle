@@ -38,7 +38,7 @@ public class PlayerNameScene extends HorizontalPage {
     public PlayerNameScene() {
         super(
             "For as long as anyone can remeber, the Bloodsouls and Diamondhearts have been fighting for control over the throne.",
-            "Contine"
+            "Continue"
         );
     }
 
