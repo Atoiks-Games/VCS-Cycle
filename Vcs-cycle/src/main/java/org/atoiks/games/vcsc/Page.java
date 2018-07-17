@@ -41,13 +41,13 @@ public abstract class Page extends Scene {
     private static final Font font = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
     private static final Font info = new Font("Monospaced", Font.PLAIN, 8);
 
-    public final int lineBreakWidth;
-
     protected Color bgColor = Color.black;
     protected Color msgColor = Color.white;
     protected Color optColor = Color.white;
 
     protected Image image = null;
+
+    private final TextWrapStrategy twrapStrat;
 
     private PositioningStrategy posStrat;
 
@@ -62,24 +62,28 @@ public abstract class Page extends Scene {
     private boolean renderSelector = true;
 
     private String[] lines;
-    private String[] options;
+    private String[][] options;
     private int[] optHeight;
 
-    protected Page(int lineBreakWidth) {
-        this.lineBreakWidth = lineBreakWidth;
+    protected Page(TextWrapStrategy twrapStrat) {
+        this.twrapStrat = twrapStrat;
     }
 
     protected void usePositioningStrategy(PositioningStrategy p) {
         this.posStrat = p;
     }
 
-    public void updateOptions(String... options) {
-        this.options = options;
-        this.optHeight = new int[Math.min(MAX_OPTS_PER_SECT, options.length)];
+    public void updateOptions(String... opts) {
+        this.options = new String[opts.length][];
+        for (int i = 0; i < opts.length; ++i) {
+            this.options[i] = twrapStrat.wrapOptionText(opts[i]); 
+        }
+
+        this.optHeight = new int[Math.min(MAX_OPTS_PER_SECT, opts.length)];
     }
 
     public void updateMessage(String message) {
-        this.lines = wrapText(message);
+        this.lines = twrapStrat.wrapMessageText(message);
     }
 
     public void updateScrollDelay(float newDelay) {
@@ -108,31 +112,6 @@ public abstract class Page extends Scene {
     public void resetOptionSelection() {
         option = 0;
         optSect = 0;
-    }
-
-    protected String[] wrapText(final String text) {
-        if (text == null || lineBreakWidth < 1) return new String[0];
-
-        // break text down into lineBreakWidth char-limits lines.
-        final String[] msgln = text.split("\n");
-        final List<String> list = new ArrayList<>();
-        for (String msg : msgln) {
-            while (msg.length() > lineBreakWidth) {
-                // try to split it at a space or tab that is the furthest away
-                final int idxSpc = msg.lastIndexOf(' ', lineBreakWidth);
-                final int idxTab = msg.lastIndexOf('\t', lineBreakWidth);
-
-                int k = Math.max(idxSpc, idxTab);
-                if (k < 0 || k > lineBreakWidth) k = Math.min(idxSpc, idxTab);
-                if (k < 0 || k > lineBreakWidth) k = lineBreakWidth - 1;
-                ++k;
-                list.add(msg.substring(0, k));
-                msg = msg.substring(k);
-            }
-            list.add(msg);
-        }
-
-        return list.toArray(new String[list.size()]);
     }
 
     public boolean doneScrolling() {
@@ -193,13 +172,19 @@ public abstract class Page extends Scene {
                 final int lower = optSect * MAX_OPTS_PER_SECT;
                 final int optDispCount = Math.min(options.length - lower, MAX_OPTS_PER_SECT);
                 g.setColor(optColor);
+
+                int h = optY;
                 for (int i = 0; i < optDispCount; ++i) {
                     final int offset = i + lower;
-                    final int h = optY + i * FONT_SIZE;
-                    final String s = options[offset];
-                    if (s == null) continue;    // Do not render <null>
-                    g.drawString(s, optX, h);
-                    optHeight[offset] = h - FONT_SIZE / 2 + 2;
+                    if (options[offset].length > 0) {
+                        optHeight[offset] = h - FONT_SIZE / 2 + 2;
+                        for (final String optLine : options[offset]) {
+                            g.drawString(optLine, optX, h);
+                            h += FONT_SIZE;
+                        }
+                    } else {
+                        h += FONT_SIZE;
+                    }
                 }
 
                 if (renderSelector && option >= 0 && option < optHeight.length) {
@@ -257,9 +242,9 @@ public abstract class Page extends Scene {
 
             normalizeOption();
 
-            // guard against all null options which would have caused infinte loop
+            // guard against all empty options which would have caused infinte loop
             final int start = option;
-            while (options[option] == null) {
+            while (options[option].length == 0) {
                 // Skip that index, it is non-selectable
                 option += delta;
                 normalizeOption();

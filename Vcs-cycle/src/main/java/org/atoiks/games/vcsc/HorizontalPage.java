@@ -18,6 +18,8 @@
 
 package org.atoiks.games.vcsc;
 
+import org.atoiks.games.vcsc.twrappers.FixedLocationWrapStrategy;
+
 public abstract class HorizontalPage extends Page {
 
     public static final int LINE_BREAK_WIDTH = 50;
@@ -35,7 +37,7 @@ public abstract class HorizontalPage extends Page {
     }
 
     public HorizontalPage(float scrollDelay, String message, String... options) {
-        super(LINE_BREAK_WIDTH);
+        super(new FixedLocationWrapStrategy(LINE_BREAK_WIDTH, LINE_BREAK_WIDTH - 2));
         updateMessage(message);
         updateOptions(options);
         updateScrollDelay(scrollDelay);
