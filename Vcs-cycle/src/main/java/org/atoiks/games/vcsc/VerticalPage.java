@@ -53,7 +53,7 @@ public abstract class VerticalPage extends Page {
 
         @Override
         public int getMessageY(Page p) {
-            return 3 * App.HEIGHT / 4 - Math.max(p.getLineCount() - (p.getOptionCount() == 0 ? 3 : 1), 1) * FONT_SIZE;
+            return 3 * FONT_SIZE / 2;
         }
 
         @Override
@@ -73,7 +73,7 @@ public abstract class VerticalPage extends Page {
 
         @Override
         public int getOptionY(Page p) {
-            return 3 * App.HEIGHT / 4 + 3 * FONT_SIZE / 2;
+            return 3 * App.HEIGHT / 4 + FONT_SIZE;
         }
     }
 }
