@@ -29,15 +29,19 @@ public final class Player implements Serializable {
     public final Skill[] skills = new Skill[4];
     public final Weakness[] weaknesses = new Weakness[2];
 
-    public int strength = 0; 
-    public int intelligence = 0; 
-    public int dexterity = 0; 
-    public int wisdom = 0; 
-    public int constitution = 0; 
+    public int strength = 0;
+    public int intelligence = 0;
+    public int dexterity = 0;
+    public int wisdom = 0;
+    public int constitution = 0;
     public int charisma = 0;
 
     public String name = null;
+    public String enemyName = "Tessa Bloodsoul";
+    public String motherName = "Merideth Diamondheart";
 
+    public boolean dHeart = true;
+    public boolean iDoNotExsist = false;
     public boolean shouldSave = false;
 
     public Player() {
