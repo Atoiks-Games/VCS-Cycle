@@ -18,6 +18,10 @@
 
 package org.atoiks.games.vcsc;
 
+import java.awt.Color;
+
+import org.atoiks.games.framework2d.IGraphics;
+
 import org.atoiks.games.vcsc.twrappers.FixedLocationWrapStrategy;
 
 public abstract class VerticalPage extends Page {
@@ -44,6 +48,14 @@ public abstract class VerticalPage extends Page {
         updateOptions(options);
         updateScrollDelay(scrollDelay);
         this.usePositioningStrategy(new PositioningStrat());
+    }
+
+    @Override
+    public void render(IGraphics g) {
+        super.render(g);
+
+        g.setColor(Color.white);
+        g.drawLine(App.WIDTH / 2, 0, App.WIDTH / 2, App.HEIGHT);
     }
 
     private class PositioningStrat implements PositioningStrategy {
