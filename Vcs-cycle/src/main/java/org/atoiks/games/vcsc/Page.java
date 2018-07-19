@@ -38,8 +38,8 @@ public abstract class Page extends Scene {
     public static final int MAX_OPTS_PER_SECT = 4;
     public static final int FONT_SIZE = 20;
 
-    private static final Font font = new Font("Monospaced", Font.PLAIN, FONT_SIZE);
-    private static final Font info = new Font("Monospaced", Font.PLAIN, 8);
+    private static final Font font = App.MONOSPACE_FONT.deriveFont(Font.PLAIN, FONT_SIZE);
+    private static final Font info = App.MONOSPACE_FONT.deriveFont(Font.PLAIN, 8);
 
     protected Color bgColor = Color.black;
     protected Color msgColor = Color.white;

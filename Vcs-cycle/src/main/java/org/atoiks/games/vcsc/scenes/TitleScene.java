@@ -34,9 +34,11 @@ import org.atoiks.games.vcsc.Player;
 import org.atoiks.games.framework2d.Scene;
 import org.atoiks.games.framework2d.IGraphics;
 
+import static org.atoiks.games.vcsc.App.MONOSPACE_FONT;
+
 public class TitleScene extends Scene {
 
-    private final Font font = new Font("Monospace", Font.PLAIN, 16);
+    private static final Font font = MONOSPACE_FONT.deriveFont(Font.PLAIN, 16);
 
     private Player cached;
     private boolean skipGeneration;
