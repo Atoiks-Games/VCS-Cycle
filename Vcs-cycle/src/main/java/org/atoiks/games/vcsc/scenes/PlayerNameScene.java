@@ -57,42 +57,35 @@ public class PlayerNameScene extends VerticalPage {
     public boolean optionSelected(int opt) {
         switch (phase) {
             case 0:
-                resetScrolling();
-                resetOptionSelection();
                 updateMessage("Your mother, " + motherName + ", was a fair and kind queen. She was loved by the land.");
+                resetScrolling();
+                resetOptionSelection();
                 phase++;
-            break;
-
+                break;
             case 1:
-                resetScrolling();
-                resetOptionSelection();
                 updateMessage("10 years ago, " + enemyName + " murdered her in cold blood. She then took the kindom for herself, brainwashing the commonfolk into obeying her every whim.");
-                phase++;
-            break;
-
-            case 2:
                 resetScrolling();
                 resetOptionSelection();
-                updateMessage("After years of training, you are ready to take your revenge on " + enemyName + ".");
                 phase++;
-            break;
-
-            case 3:
-                String name;
-                while (true) {
+                break;
+            case 2:
+                updateMessage("After years of training, you are ready to take your revenge on " + enemyName + ".");
+                resetScrolling();
+                resetOptionSelection();
+                phase++;
+                break;
+            case 3: {
+                String name = null;
+                while (name == null || name.trim().isEmpty()) {
                     name = JOptionPane.showInputDialog(null, "What is your first name?", "Atoiks Games - VCS Cycle", JOptionPane.PLAIN_MESSAGE);
-                    if (!(name == null || name.trim().isEmpty())) break;
                 }
 
-                if(dHeart){
-                    cached.name = name + " Diamondheart";
-                }else{
-                    cached.name = name + " Bloodsoul";
-                }
+                cached.name = name.trim() + (dHeart ? " Diamondheart" : " Bloodsoul");
 
                 scene.gotoNextScene();
-            break;
+                break;
+            }
         }
-    return true;
+        return true;
     }
 }
