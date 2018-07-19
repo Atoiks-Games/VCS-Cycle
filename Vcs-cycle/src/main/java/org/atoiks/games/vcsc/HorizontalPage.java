@@ -22,7 +22,7 @@ import org.atoiks.games.vcsc.twrappers.FixedLocationWrapStrategy;
 
 public abstract class HorizontalPage extends Page {
 
-    public static final int LINE_BREAK_WIDTH = 50;
+    public static final int LINE_BREAK_WIDTH = 74;
 
     protected HorizontalPage() {
         this(DEFAULT_SCROLL_DELAY, null);
@@ -48,7 +48,7 @@ public abstract class HorizontalPage extends Page {
 
         @Override
         public int getMessageX(Page p) {
-            return 0;
+            return 20;
         }
 
         @Override
@@ -68,7 +68,7 @@ public abstract class HorizontalPage extends Page {
 
         @Override
         public int getOptionX(Page p) {
-            return 30;
+            return getMessageX(p) + 30;
         }
 
         @Override

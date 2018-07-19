@@ -26,7 +26,7 @@ import org.atoiks.games.vcsc.twrappers.FixedLocationWrapStrategy;
 
 public abstract class VerticalPage extends Page {
 
-    public static final int LINE_BREAK_WIDTH = 25;
+    public static final int LINE_BREAK_WIDTH = 35;
 
     protected boolean textOnRight = false;
 
