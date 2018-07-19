@@ -63,7 +63,7 @@ public class TitleScene extends Scene {
             g.fillRect(222, 388, 372, 408);
             g.setFont(font);
             g.setColor(Color.white);
-            g.drawString("Press enter to start game", 450, 470);
+            g.drawString("Press enter to start game", 470, 470);
 
             // the initial drawString on macs is slow, it blocks
             // the reset of the operation including the screen.
