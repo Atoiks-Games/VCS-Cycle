@@ -19,7 +19,6 @@
 package org.atoiks.games.vcsc.scenes;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 
 import org.atoiks.games.vcsc.Player;
 import org.atoiks.games.vcsc.VerticalPage;
