@@ -19,8 +19,7 @@
 package org.atoiks.games.vcsc.scenes;
 
 import java.awt.Color;
-
-import javax.swing.JOptionPane;
+import java.awt.event.KeyEvent;
 
 import org.atoiks.games.vcsc.Player;
 import org.atoiks.games.vcsc.VerticalPage;
@@ -34,6 +33,8 @@ public class PlayerNameScene extends VerticalPage {
     private String enemyName;
     private String motherName;
     private int phase = 0;
+
+    private final StringBuilder nameBuf = new StringBuilder();
 
     public PlayerNameScene() {
         super(
@@ -51,6 +52,35 @@ public class PlayerNameScene extends VerticalPage {
         dHeart = cached.dHeart;
         enemyName = cached.enemyName;
         motherName = cached.motherName;
+    }
+
+    @Override
+    public boolean update(final float dt) {
+        final boolean r = super.update(dt);
+        if (r && phase == 4) {
+            final String s = scene.keyboard().getTypedChars();
+            switch (s) {
+                case "":
+                case "\n":
+                case "\r":
+                    // Ignore these characters
+                    break;
+                case "\b": {
+                    // backspace, delete buffer
+                    final int len = nameBuf.length();
+                    if (len > 0) {
+                        nameBuf.deleteCharAt(len - 1);
+                        updateMessage("Your name: " + nameBuf);
+                    }
+                    break;
+                }
+                default:
+                    nameBuf.append(s);
+                    updateMessage("Your name: " + nameBuf);
+                    break;
+            }
+        }
+        return r;
     }
 
     @Override
@@ -74,15 +104,27 @@ public class PlayerNameScene extends VerticalPage {
                 resetOptionSelection();
                 phase++;
                 break;
-            case 3: {
-                String name = null;
-                while (name == null || name.trim().isEmpty()) {
-                    name = JOptionPane.showInputDialog(null, "What is your first name?", "Atoiks Games - VCS Cycle", JOptionPane.PLAIN_MESSAGE);
+            case 3:
+                updateMessage("What is your name?\nType it here directly");
+                resetScrolling();
+                phase++;
+                // Next phase requires char capturing
+                scene.keyboard().captureTypedChars(true);
+                break;
+            case 4: {
+                // Disable char capturing
+                scene.keyboard().captureTypedChars(false);
+                final String firstName = nameBuf.toString().trim();
+                if (firstName.isEmpty()) {
+                    // Re-enable char capturing, no empty names allowed
+                    scene.keyboard().captureTypedChars(true);
+                    nameBuf.setLength(0);
+                } else {
+                    phase++;
+                    cached.name = firstName + (dHeart ? " Diamondheart" : " Bloodsoul");
+
+                    scene.gotoNextScene();
                 }
-
-                cached.name = name.trim() + (dHeart ? " Diamondheart" : " Bloodsoul");
-
-                scene.gotoNextScene();
                 break;
             }
         }
