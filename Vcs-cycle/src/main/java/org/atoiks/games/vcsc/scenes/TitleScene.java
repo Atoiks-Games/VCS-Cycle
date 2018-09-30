@@ -31,12 +31,12 @@ import javax.imageio.ImageIO;
 
 import org.atoiks.games.vcsc.Player;
 
-import org.atoiks.games.framework2d.Scene;
+import org.atoiks.games.framework2d.GameScene;
 import org.atoiks.games.framework2d.IGraphics;
 
 import static org.atoiks.games.vcsc.App.MONOSPACE_FONT;
 
-public class TitleScene extends Scene {
+public class TitleScene extends GameScene {
 
     private static final Font font = MONOSPACE_FONT.deriveFont(Font.PLAIN, 16);
 

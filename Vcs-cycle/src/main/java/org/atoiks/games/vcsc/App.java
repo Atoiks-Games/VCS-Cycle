@@ -54,7 +54,8 @@ public class App {
                 .setTitle("Atoiks Games - VCS Cycle")
                 .setResizable(false)
                 .setSize(WIDTH, HEIGHT)
-                .setScenes(new TitleScene(), new PlayerNameScene(), new StatsGenScene(), new StatsScene());
+                .setLoader(new DummyLoader())
+                .setGameScenes(new TitleScene(), new PlayerNameScene(), new StatsGenScene(), new StatsScene());
         final Frame frame = new Frame(info);
         try {
             frame.init();

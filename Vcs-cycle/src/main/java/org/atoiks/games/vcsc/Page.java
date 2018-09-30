@@ -27,10 +27,10 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.atoiks.games.framework2d.Scene;
+import org.atoiks.games.framework2d.GameScene;
 import org.atoiks.games.framework2d.IGraphics;
 
-public abstract class Page extends Scene {
+public abstract class Page extends GameScene {
 
     public static final float DEFAULT_SCROLL_DELAY = 0.05f;
     public static final float NO_SCROLL_DELAY = 0;
