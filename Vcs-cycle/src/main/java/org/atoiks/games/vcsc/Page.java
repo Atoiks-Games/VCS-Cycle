@@ -222,6 +222,9 @@ public abstract class Page extends GameScene {
         }
 
         if (options.length > 0) {
+            // Assume selector should be rendered
+            renderSelector = true;
+
             // Only contains -1, 0, +1
             int delta = 0;
 
